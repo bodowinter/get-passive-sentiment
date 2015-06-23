@@ -93,7 +93,7 @@ p + scale_fill_manual(values=c("#669900","#FF8533")) +
 
 mutate(pass_red,LogFreq=log10(freq+1)) -> pass_red
 quartz("",9,5)
-ggplot(pass_red,aes(x=LogFreq,y=Valence,color=lemma2)) + geom_point(shape=16,alpha=15/100) + facet_wrap(~lemma2) + 
+ggplot(pass_red,aes(x=LogFreq,y=Valence,color=lemma2)) + geom_point(shape=16,alpha=45/100) + facet_wrap(~lemma2) + 
 	labs(y="Valence Ratings\n",x="\nFrequency (log10)") +
 	scale_color_manual(values=c("#669900","#FF8533")) +
 	geom_smooth(method="lm") +
@@ -103,7 +103,8 @@ ggplot(pass_red,aes(x=LogFreq,y=Valence,color=lemma2)) + geom_point(shape=16,alp
 		axis.title.x=element_text(face="bold",size=20),
 		axis.text.x=element_text(face="bold"),
 		axis.title.x=element_text(face="bold"),
-		strip.text.x = element_text(size=20,face="bold",vjust=2))
+		strip.text.x = element_text(size=20,face="bold",vjust=2),
+		legend.position="none")
 ggsave(file="frequency_valence.png")
 
 ## Test for the interaction:
@@ -179,17 +180,83 @@ passive.pred <- predict.glm(lm(LiuPosWord01~lemma2*),newdata=data.frame(LogFreq=
 ## Make a ggplot out of this:
 
 quartz("",9,5)
-ggplot(pass,aes(x=jitter(LogFreq,factor=0.2),
-	y=jitter(LiuPosWord01,factor=0.2),color=lemma2)) + geom_point(shape=16,alpha=5/100) + facet_wrap(~lemma2) + 
+ggplot(pass,aes(x=LogFreq,factor,
+	y=LiuPosWord01,color=lemma2)) + geom_point(shape=16,alpha=5/100,position=position_jitter(width=0.05,height=0.05)) +
+	facet_wrap(~lemma2) + 
 	labs(y="Positive Word\n",x="\nFrequency (log10)") +
 	scale_color_manual(values=c("#669900","#FF8533")) +
+	coord_cartesian(ylim=c(-0.5,1.5)) +
+	stat_smooth(method="glm",family="binomial") +
 	theme_minimal() + theme(plot.margin=unit(c(1,1,1,1.5),"cm"),
 		axis.text.y=element_text(face="bold"),
 		axis.title.y=element_text(face="bold",size=20),
 		axis.title.x=element_text(face="bold",size=20),
 		axis.text.x=element_text(face="bold"),
 		axis.title.x=element_text(face="bold"),
-		strip.text.x = element_text(size=20,face="bold",vjust=2))	
+		strip.text.x = element_text(size=20,face="bold",vjust=2),
+		legend.position="none")
+ggsave(file="sentiment.png")
+
+## Zoom in:
+
+quartz("",9,5)
+ggplot(pass,aes(x=LogFreq,factor,
+	y=LiuPosWord01,color=lemma2)) + geom_point(shape=16,alpha=0,position=position_jitter(width=0.05,height=0.05)) +
+	facet_wrap(~lemma2) + 
+	labs(y="Positive Word\n",x="\nFrequency (log10)") +
+	scale_color_manual(values=c("#669900","#FF8533")) +
+	coord_cartesian(ylim=c(-0.05,0.2)) +
+	stat_smooth(method="glm",family="binomial") +
+	theme_minimal() + theme(plot.margin=unit(c(1,1,1,1.5),"cm"),
+		axis.text.y=element_text(face="bold"),
+		axis.title.y=element_text(face="bold",size=20),
+		axis.title.x=element_text(face="bold",size=20),
+		axis.text.x=element_text(face="bold"),
+		axis.title.x=element_text(face="bold"),
+		strip.text.x = element_text(size=20,face="bold",vjust=2),
+		legend.position="none")
+ggsave(file="sentiment_logistic.png")
+
+## Make a ggplot out of this:
+
+quartz("",9,5)
+ggplot(pass,aes(x=LogFreq,factor,
+	y=LiuNegWord01,color=lemma2)) + geom_point(shape=16,alpha=5/100,position=position_jitter(width=0.05,height=0.05)) +
+	facet_wrap(~lemma2) + 
+	labs(y="Negative Word\n",x="\nFrequency (log10)") +
+	scale_color_manual(values=c("#669900","#FF8533")) +
+	coord_cartesian(ylim=c(-0.5,1.5)) +
+	stat_smooth(method="glm",family="binomial") +
+	theme_minimal() + theme(plot.margin=unit(c(1,1,1,1.5),"cm"),
+		axis.text.y=element_text(face="bold"),
+		axis.title.y=element_text(face="bold",size=20),
+		axis.title.x=element_text(face="bold",size=20),
+		axis.text.x=element_text(face="bold"),
+		axis.title.x=element_text(face="bold"),
+		strip.text.x = element_text(size=20,face="bold",vjust=2),
+		legend.position="none")
+ggsave(file="sentiment_negative.png")
+
+## Zoom in:
+
+quartz("",9,5)
+ggplot(pass,aes(x=LogFreq,factor,
+	y=LiuNegWord01,color=lemma2)) + geom_point(shape=16,alpha=0,position=position_jitter(width=0.05,height=0.05)) +
+	facet_wrap(~lemma2) + 
+	labs(y="Negative Word\n",x="\nFrequency (log10)") +
+	scale_color_manual(values=c("#669900","#FF8533")) +
+	coord_cartesian(ylim=c(0,0.6)) +
+	stat_smooth(method="glm",family="binomial") +
+	theme_minimal() + theme(plot.margin=unit(c(1,1,1,1.5),"cm"),
+		axis.text.y=element_text(face="bold"),
+		axis.title.y=element_text(face="bold",size=20),
+		axis.title.x=element_text(face="bold",size=20),
+		axis.text.x=element_text(face="bold"),
+		axis.title.x=element_text(face="bold"),
+		strip.text.x = element_text(size=20,face="bold",vjust=2),
+		legend.position="none")
+ggsave(file="sentiment_logistic_negative.png")
+
 
 
 
